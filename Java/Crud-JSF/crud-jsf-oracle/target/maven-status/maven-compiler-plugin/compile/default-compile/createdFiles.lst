@@ -1,0 +1,4 @@
+cl\demo\crud\model\Cliente.class
+cl\demo\crud\bean\ClienteBean.class
+cl\demo\crud\util\Db.class
+cl\demo\crud\dao\ClienteDao.class

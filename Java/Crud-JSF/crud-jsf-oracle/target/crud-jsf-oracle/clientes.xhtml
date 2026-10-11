@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core">
+
+<h:head>
+  <title>CRUD de Clientes</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 860px; margin: 2rem auto; padding: 0 1rem; }
+    fieldset { border: 1px solid #ccc; border-radius: 6px; padding: 1rem; margin-bottom: 1.5rem; }
+    label { display: inline-block; width: 90px; }
+    input[type=text] { padding: 4px 6px; width: 260px; }
+    .msg-info { color: #1a7f37; list-style: none; padding: 0; }
+    .msg-error { color: #c62828; list-style: none; padding: 0; }
+    table.tabla { border-collapse: collapse; width: 100%; }
+    table.tabla th, table.tabla td { border: 1px solid #ddd; padding: 6px 10px; text-align: left; }
+    table.tabla th { background: #f3f3f3; }
+    .row { margin-bottom: .6rem; }
+  </style>
+</h:head>
+
+<h:body>
+  <h1>Clientes</h1>
+
+  <h:messages id="msgs" globalOnly="true" infoClass="msg-info" errorClass="msg-error" />
+
+  <!-- Formulario crear / editar -->
+  <h:form id="formEdicion">
+    <fieldset>
+      <legend>
+        <h:outputText value="Nuevo cliente" rendered="#{clienteBean.cliente.id == null}" />
+        <h:outputText value="Editar cliente ##{clienteBean.cliente.id}" rendered="#{clienteBean.cliente.id != null}" />
+      </legend>
+
+      <div class="row">
+        <h:outputLabel for="nombre" value="Nombre" />
+        <h:inputText id="nombre" value="#{clienteBean.cliente.nombre}"
+                     required="true" requiredMessage="El nombre es obligatorio">
+          <f:validateLength maximum="100" />
+        </h:inputText>
+        <h:message for="nombre" errorClass="msg-error" />
+      </div>
+
+      <div class="row">
+        <h:outputLabel for="email" value="Email" />
+        <h:inputText id="email" value="#{clienteBean.cliente.email}"
+                     required="true" requiredMessage="El email es obligatorio">
+          <f:validateRegex pattern="^[^@\s]+@[^@\s]+\.[^@\s]+$" />
+          <f:validateLength maximum="150" />
+        </h:inputText>
+        <h:message for="email" errorClass="msg-error" />
+      </div>
+
+      <div class="row">
+        <h:outputLabel for="telefono" value="Teléfono" />
+        <h:inputText id="telefono" value="#{clienteBean.cliente.telefono}">
+          <f:validateLength maximum="30" />
+        </h:inputText>
+        <h:message for="telefono" errorClass="msg-error" />
+      </div>
+
+      <h:commandButton value="Guardar" action="#{clienteBean.guardar}" />
+      <h:commandButton value="Cancelar" action="#{clienteBean.cancelar}" immediate="true"
+                       style="margin-left:.5rem">
+        <f:ajax render="@form" resetValues="true" />
+      </h:commandButton>
+    </fieldset>
+  </h:form>
+
+  <!-- Listado -->
+  <h:form id="formLista">
+    <h:dataTable id="tabla" value="#{clienteBean.clientes}" var="c" styleClass="tabla"
+                 rendered="#{not empty clienteBean.clientes}">
+      <h:column>
+        <f:facet name="header">ID</f:facet>
+        #{c.id}
+      </h:column>
+      <h:column>
+        <f:facet name="header">Nombre</f:facet>
+        #{c.nombre}
+      </h:column>
+      <h:column>
+        <f:facet name="header">Email</f:facet>
+        #{c.email}
+      </h:column>
+      <h:column>
+        <f:facet name="header">Teléfono</f:facet>
+        #{c.telefono}
+      </h:column>
+      <h:column>
+        <f:facet name="header">Acciones</f:facet>
+        <h:commandButton value="Editar" action="#{clienteBean.editar(c)}">
+          <f:ajax render=":formEdicion" />
+        </h:commandButton>
+        <h:commandButton value="Eliminar" action="#{clienteBean.eliminar(c)}"
+                         onclick="return confirm('¿Eliminar este cliente?');"
+                         style="margin-left:.4rem">
+          <f:ajax render="@form :formEdicion :msgs" />
+        </h:commandButton>
+      </h:column>
+    </h:dataTable>
+
+    <h:outputText value="No hay clientes registrados." rendered="#{empty clienteBean.clientes}" />
+  </h:form>
+</h:body>
+</html>
